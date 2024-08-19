@@ -1,0 +1,23 @@
+#!/bin/sh
+. "$(dirname "$0")/husky.sh"
+# git commit执行成功提示
+echo -e "\033[32m git commit 执行成功！\033[0m"
+#!黄色字体  -e 选项：echo 命令使用 -e 选项来启用解释反斜杠转义字符。
+echo -e "\033[33m开始执行:git pull origin develop\033[0m"
+
+
+# Attempt to pull and capture the output
+output=$(git pull origin develop 2>&1)
+status=$?
+
+# Check if the pull was unsuccessful
+if [ $status -ne 0 ]; then
+  # Print the error message in red
+  echo -e "\033[31m $output \033[0m"
+  echo "Conflicts:"
+  # 在这个例子中，sed 's/^/\033[31m/g'会在每一行的开头添加红色字体代码，sed 's/$/\033[0m/g'会在每一行的结尾添加重置字体代码。这样就可以在输出信息中高亮显示包含"CONFLICT"的行。
+  echo "$output" | grep "CONFLICT" | sed 's/^/\033[31m/g' | sed 's/$/\033[0m/g'
+  exit 1
+else
+  echo -e "\033[32m git pull origin develop 执行成功！请检查是否有冲突代码在提交本地代码\033[0m"
+fi
